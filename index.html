@@ -5,31 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TEST Contents Top page</title>
 
-<script type="javascript">
+<script>
+  function doClear() {
+    var tag = document.getElementById("div_result");
+    tag.innerHTML = "result:";
+  }
   function doAlert() {
     alert("argumentOfAlert");
   }
   function doConfirm() {
-    var tag = document.getElementById("div_result");
-    tag.innerHTML = "result:";
     var res = confirm("argumentOfConfirm");
-    tag.innerHTML = "result:" + (res) ? "True" : "False";
+    var tag = document.getElementById("div_result");
+    tag.innerHTML = "result:" + ((res) ? "True" : "False");
   }
   function doPrompt() {
-    var tag = document.getElementById("div_result");
-    tag.innerHTML = "result:";
     var res = prompt("argumentOfPrompt", "defaultOfPrompt");
+    var tag = document.getElementById("div_result");
     tag.innerHTML = "result:" + res;
   }
 </script>
 
   </head>
   <body>
+    <hr/>
     <a href="https://itaccessnflc1.github.io/index_youtube_object.html">YouTube Object Tag</a><br/>
     <a href="https://itaccessnflc1.github.io/index_youtube_embed.html">YouTube Embed Tag</a><br/>
-
+    <hr/>
     <div id="div_result">result:</div>
-
+    <a href="javascript:doClear()">Clear Result</a><br/>
     <a href="javascript:doAlert()">Alert Dialog</a><br/>
     <a href="javascript:doConfirm()">Confirm Dialog</a><br/>
     <a href="javascript:doPrompt()">Prompt Dialog</a><br/>
