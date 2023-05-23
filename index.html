@@ -4,9 +4,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TEST Contents Top page</title>
+
+<script type="javascript">
+  function doAlert() {
+    alert("argumentOfAlert");
+  }
+  function doConfirm() {
+    var tag = document.getElementById("div_result");
+    tag.innerHTML = "result:";
+    var res = confirm("argumentOfConfirm");
+    tag.innerHTML = "result:" + (res) ? "True" : "False";
+  }
+  function doPrompt() {
+    var tag = document.getElementById("div_result");
+    tag.innerHTML = "result:";
+    var res = prompt("argumentOfPrompt", "defaultOfPrompt");
+    tag.innerHTML = "result:" + res;
+  }
+</script>
+
   </head>
   <body>
     <a href="https://itaccessnflc1.github.io/index_youtube_object.html">YouTube Object Tag</a><br/>
     <a href="https://itaccessnflc1.github.io/index_youtube_embed.html">YouTube Embed Tag</a><br/>
+
+    <div id="div_result">result:</div>
+
+    <a href="javascript:doAlert()">Alert Dialog</a><br/>
+    <a href="javascript:doConfirm()">Confirm Dialog</a><br/>
+    <a href="javascript:doPrompt()">Prompt Dialog</a><br/>
   </body>
 </html>
