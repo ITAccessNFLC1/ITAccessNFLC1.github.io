@@ -26,7 +26,7 @@ window.onload = function () {
   test_play_state  = document.getElementById("test_play_state");
   test_sinklabel   = document.getElementById("test_sinklabel");
   test_sinkdevices = document.getElementById("test_sinkdevices");
-  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(
+  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
       refresh();
     }
