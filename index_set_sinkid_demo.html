@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- original contents from url=(0044)https://guidou.github.io/setsinkid-demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>setSinkId and enumeration demo</title>
+  </head>
+  <body>
+    <br><br><br><b>MP3 audio:</b>
+    <audio id="test_audio" src="audiobeast.mp3"></audio><br>
+    <label id="test_play_state"></label><br>
+    <button onclick="do_play;">Play</button><button onclick="do_pause();">Pause</button><br>
+    <label id="test_sinklabel"></label><br>
+    Change Audio Device: <select id="test_sinkdevices"
+        onchange="device_selected(options, options.selectedIndex)">
+      <option value="invalid"></option>
+    </select><br>
+    <button onclick="refresh();">Refresh device list</button>
+
+<script>
+var test_audio       = null;
+var test_play_state  = null;
+var test_sinklabel   = null;
+var test_sinkdevices = null;
+
+window.onload = function () {
+  test_audio       = document.getElementById("test_audio");
+  test_play_state  = document.getElementById("test_play_state");
+  test_sinklabel   = document.getElementById("test_sinklabel");
+  test_sinkdevices = document.getElementById("test_sinkdevices");
+  refresh();
+};
+
+function do_play() {
+  test_audio.play();
+  test_play_state.innerHTML = 'Playing..';
+}
+
+function do_pause() {
+  test_audio.pause();
+  test_play_state.innerHTML = 'Pausing..';
+}
+
+function refresh() {
+  navigator.mediaDevices.enumerateDevices().then(
+    function(infos) {
+      test_sinkdevices.disabled  = true;
+      test_sinkdevices.innerHTML = '';
+      var count = 1;
+      for (var i = 0; i < infos.length; i++) {
+        var info = infos[i];
+        if (info.kind != 'audiooutput') continue;
+        make_option_tag(count, info.deviceId, info.kind, info.label);
+        count++;
+      }
+      test_sinkdevices.disabled  = false;
+      device_selected(test_sinkdevices.options, 0);
+      do_pause();
+    },
+    function(msg) {
+      alert('Something wrong: ' + msg);
+    }
+  );
+}
+
+function make_option_tag(count, device_id, kind, label) {
+  var option   = document.createElement("option");
+  option.value = device_id;
+  option.text  = '' + (count) + ' - ' + kind + ', ' + label;
+  test_sinkdevices.appendChild(option);
+}
+
+function device_selected(options, index) {
+  var option    = options[index];
+  var device_id = option.value;
+  test_audio.setSinkId(device_id).then(function(result) {
+    test_sinklabel.innerHTML = 'Audio output device sink ID is ' + test_audio.sinkId;
+  }, function(e) {
+    test_sinklabel.innerHTML = 'Audio output device could not be set: ' + e.name + ' - ' + e.message;
+  });
+}
+</script>
+
+</body></html>
