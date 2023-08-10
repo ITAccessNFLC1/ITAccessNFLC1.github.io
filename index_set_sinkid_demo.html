@@ -26,7 +26,15 @@ window.onload = function () {
   test_play_state  = document.getElementById("test_play_state");
   test_sinklabel   = document.getElementById("test_sinklabel");
   test_sinkdevices = document.getElementById("test_sinkdevices");
-  refresh();
+  navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(
+    function(stream) {
+      refresh();
+    }
+  ).catch(
+    function(err) {
+      alert('Something wrong: ' + err);
+    }
+  );
 };
 
 function do_play() {
