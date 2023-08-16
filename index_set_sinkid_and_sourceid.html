@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- original contents from url=(0044)https://guidou.github.io/setsinkid-demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>setSinkId and enumeration demo</title>
+  </head>
+  <body>
+    <br><br><br><b>Sink and Source:</b>
+    <audio id="test_audio"></audio><br>
+    <label id="test_play_state"></label><br>
+    <button onclick="do_play();">Play</button><button onclick="do_pause();">Pause</button><br>
+    <label id="test_sinklabel"></label><br>
+    Change Audio Out Device: <select id="test_sinkdevices"
+        onchange="out_device_selected(options, options.selectedIndex)">
+      <option value="invalid"></option>
+    </select><br>
+    <label id="test_sourcelabel"></label><br>
+    Change Audio In Device: <select id="test_sourcedevices"
+        onchange="in_device_selected(options, options.selectedIndex)">
+      <option value="invalid"></option>
+    </select><br>
+    <button onclick="refresh();">Refresh device list</button>
+
+<script>
+var test_audio        = null;
+var test_play_state   = null;
+var test_sinklabel    = null;
+var test_sinkdevices  = null;
+var test_soucelabel   = null;
+var test_soucedevices = null;
+
+window.onload = function () {
+  test_audio         = document.getElementById("test_audio");
+  test_play_state    = document.getElementById("test_play_state");
+  test_sinklabel     = document.getElementById("test_sinklabel");
+  test_sinkdevices   = document.getElementById("test_sinkdevices");
+  test_sourcelabel   = document.getElementById("test_sourcelabel");
+  test_sourcedevices = document.getElementById("test_sourcedevices");
+  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
+    function(stream) {
+      refresh();
+    }
+  ).catch(
+    function(err) {
+      alert('Something wrong: ' + err);
+    }
+  );
+};
+
+function do_play() {
+  test_audio.play();
+  test_play_state.innerHTML = 'Playing..';
+}
+
+function do_pause() {
+  test_audio.pause();
+  test_play_state.innerHTML = 'Pausing..';
+}
+
+function refresh() {
+  navigator.mediaDevices.enumerateDevices().then(
+    function(infos) {
+      test_sinkdevices.disabled    = true;
+      test_sinkdevices.innerHTML   = '';
+      test_sourcedevices.disabled  = true;
+      test_sourcedevices.innerHTML = '';
+      var count_out = 1;
+      var count_in  = 1;
+      for (var i = 0; i < infos.length; i++) {
+        var info = infos[i];
+        if (info.kind == 'audiooutput') {
+          make_option_tag(test_sinkdevices,   count_out, info.deviceId, info.kind, info.label);
+          count_out++;
+        } else
+        if (info.kind == 'audioinput') {
+          make_option_tag(test_sourcedevices, count_in,  info.deviceId, info.kind, info.label);
+          count_in++;
+        }
+      }
+      test_sinkdevices.disabled    = false;
+      test_sourcedevices.disabled  = false;
+      out_device_selected(test_sinkdevices.options, 0);
+      in_device_selected(test_sourcedevices.options, 0);
+      do_pause();
+    },
+    function(msg) {
+      alert('Something wrong: ' + msg);
+    }
+  );
+}
+
+function make_option_tag(element, count, device_id, kind, label) {
+  var option   = document.createElement("option");
+  option.value = device_id;
+  option.text  = '' + (count) + ' - ' + kind + ', ' + label;
+  element.appendChild(option);
+}
+
+function out_device_selected(options, index) {
+  var option    = options[index];
+  var device_id = option.value;
+  test_audio.setSinkId(device_id).then(function(result) {
+    test_sinklabel.innerHTML = 'Audio output device sink ID is ' + test_audio.sinkId;
+  }, function(e) {
+    test_sinklabel.innerHTML = 'Audio output device could not be set: ' + e.name + ' - ' + e.message;
+  });
+}
+
+function in_device_selected(options, index) {
+  var option    = options[index];
+  var device_id = option.value;
+  navigator.mediaDevices.getUserMedia({video: false, audio: {deviceId: device_id} }).then(
+    function(stream) {
+      test_audio.srcObject = stream;
+      test_sourcelabel.innerHTML = 'Audio input device source ID is ' + device_id;
+    }
+  ).catch(
+    function(e) {
+      test_sourcelabel.innerHTML = 'Audio input device could not be set: ' + e.name + ' - ' + e.message;
+    }
+  );
+}
+</script>
+
+</body></html>
