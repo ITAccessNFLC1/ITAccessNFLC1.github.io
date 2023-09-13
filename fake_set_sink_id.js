@@ -8,6 +8,8 @@ window.nfbe = new class {
     return this.mAudioPlayer;
   }
   playAudio(destination) {
+    nfbe.logd("playAudio('" + String(destination) + "','"
+        + String(destination.stream) + "')");
     //this.mAudioPlayer.pause();
     this.mAudioPlayer.srcObject = destination.stream;
     this.mAudioPlayer.play()
