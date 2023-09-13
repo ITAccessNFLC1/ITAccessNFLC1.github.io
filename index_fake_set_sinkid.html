@@ -23,6 +23,7 @@ var test_sinklabel   = null;
 var test_sinkdevices = null;
 var test_audioCtx    = null;
 var test_audioTrack  = null;
+var isBeep = false;
 
 window.onload = function () {
   test_audio_src   = document.getElementById("test_audio");
@@ -45,13 +46,13 @@ window.onload = function () {
 
 function do_play() {
   test_audioTrack.connect(test_audioCtx.destination);
-  test_audioTrack.start();
+  if (!isBeep) { test_audioTrack.start(); }
   //test_audio_src.play();
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
-  test_audioTrack.stop();
+  if (isBeep) { test_audioTrack.stop(); }
   //test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
 }
