@@ -31,8 +31,9 @@ window.onload = function () {
   test_sinklabel   = document.getElementById("test_sinklabel");
   test_sinkdevices = document.getElementById("test_sinkdevices");
   test_audioCtx    = new AudioContext();
-  //test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
-  test_audioTrack  = test_audioCtx.createOscillator();
+  test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
+  //test_audioTrack  = test_audioCtx.createOscillator();
+  test_audioTrack.start();
   navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
       refresh();
@@ -46,14 +47,14 @@ window.onload = function () {
 
 function do_play() {
   test_audioTrack.connect(test_audioCtx.destination);
-  if (!isBeep) { test_audioTrack.start(); }
-  //test_audio_src.play();
+  //if (!isBeep) { test_audioTrack.start(); }
+  test_audio_src.play();
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
-  if (isBeep) { test_audioTrack.stop(); }
-  //test_audio_src.pause();
+  //if (isBeep) { test_audioTrack.stop(); }
+  test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
 }
 
