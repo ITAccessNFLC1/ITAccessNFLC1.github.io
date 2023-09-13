@@ -45,12 +45,14 @@ window.onload = function () {
 
 function do_play() {
   test_audioTrack.connect(test_audioCtx.destination);
-  test_audio_src.play();
+  test_audioTrack.start();
+  //test_audio_src.play();
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
-  test_audio_src.pause();
+  test_audioTrack.stop();
+  //test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
 }
 
