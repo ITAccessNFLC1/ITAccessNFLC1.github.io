@@ -11,9 +11,10 @@ window.nfbe = new class {
   playAudio(destination) {
     nfbe.logd("playAudio('" + String(destination) + "','"
         + String(destination.stream) + "')");
+    var self = this;
     window.setTimeout(function() {
-      this.mAudioPlayer.srcObject = destination.stream;
-      this.mAudioPlayer.play()
+      self.mAudioPlayer.srcObject = destination.stream;
+      self.mAudioPlayer.play()
       .then(() => {
         nfbe.logd("calling play() resolved O.");
       })
