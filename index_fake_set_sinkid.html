@@ -31,6 +31,7 @@ window.onload = function () {
   test_sinkdevices = document.getElementById("test_sinkdevices");
   test_audioCtx    = new AudioContext();
   test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
+  //test_audioTrack  = test_audioCtx.createOscillator();
   navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
       refresh();
