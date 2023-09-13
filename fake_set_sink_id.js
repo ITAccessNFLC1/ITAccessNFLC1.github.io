@@ -8,14 +8,14 @@ window.nfbe = new class {
     return this.mAudioPlayer;
   }
   playAudio(destination) {
-    this.mAudioPlayer.pause();
+    //this.mAudioPlayer.pause();
     this.mAudioPlayer.srcObject = destination.stream;
     this.mAudioPlayer.play()
     .then(() => {
       nfbe.logd("calling play() resolved O.");
     })
-    .catch(() => {
-      nfbe.logd("calling play() rejected X.");
+    .catch((err) => {
+      nfbe.logd("calling play() rejected X: " + err);
     });
   }
   logd(msg) {
@@ -26,6 +26,7 @@ window.AudioContextOrig = window.AudioContext;
 window.AudioContext = class NFBEAudioContext extends window.AudioContextOrig {
   constructor(audioSinkOptionsOrSinkId) {
     super();
+    this.fakeDestination = this.createMediaStreamDestination();
     nfbe.logd("constructor(" + String(audioSinkOptionsOrSinkId) + ")");
     this.sink_id = audioSinkOptionsOrSinkId;
     if (this.sink_id === undefined ||
@@ -40,7 +41,7 @@ window.AudioContext = class NFBEAudioContext extends window.AudioContextOrig {
       nfbe.logd("Fake setSinkId(" + String(this.sink_id) + ") calling.");
       nfbe.audioPlayer.setSinkId(this.sink_id)
       .then(() => {
-        nfbe.playAudio(super.destination);
+        nfbe.playAudio(this.fakeDestination);
         nfbe.logd("Fake setSinkId(" + String(this.sink_id) + ") resolved O.");
         resolve({});
       })
@@ -55,9 +56,9 @@ window.AudioContext = class NFBEAudioContext extends window.AudioContextOrig {
     return this.sink_id;
   }
   get destination() {
-    nfbe.logd("destination: destination='" + String(super.destination) + "'");
-    nfbe.playAudio(super.destination);
-    return super.destination;
+    nfbe.logd("destination: destination='" + String(this.fakeDestination) + "'");
+    nfbe.playAudio(this.fakeDestination);
+    return this.fakeDestination;
   }
   createMediaStreamSource(stream) {
     nfbe.logd("createMediaStreamSource(" + String(stream) + ")");
