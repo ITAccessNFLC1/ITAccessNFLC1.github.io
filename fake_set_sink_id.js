@@ -2,6 +2,7 @@
 window.nfbe = new class {
   constructor() {
     this.TAG = "@@@ FakeAudioContext @@@: ";
+    this.PLAY_DELAY = 200;
     this.mAudioPlayer = new Audio;
   }
   get audioPlayer() {
@@ -10,15 +11,16 @@ window.nfbe = new class {
   playAudio(destination) {
     nfbe.logd("playAudio('" + String(destination) + "','"
         + String(destination.stream) + "')");
-    //this.mAudioPlayer.pause();
-    this.mAudioPlayer.srcObject = destination.stream;
-    this.mAudioPlayer.play()
-    .then(() => {
-      nfbe.logd("calling play() resolved O.");
-    })
-    .catch((err) => {
-      nfbe.logd("calling play() rejected X: " + err);
-    });
+    window.setTimeout(function() {
+      this.mAudioPlayer.srcObject = destination.stream;
+      this.mAudioPlayer.play()
+      .then(() => {
+        nfbe.logd("calling play() resolved O.");
+      })
+      .catch((err) => {
+        nfbe.logd("calling play() rejected X: " + err);
+      });
+    }, this.PLAY_DELAY);
   }
   logd(msg) {
     console.log(this.TAG + msg);
