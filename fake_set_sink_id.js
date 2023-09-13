@@ -9,8 +9,7 @@ window.nfbe = new class {
     return this.mAudioPlayer;
   }
   playAudio(destination) {
-    nfbe.logd("playAudio('" + String(destination) + "','"
-        + String(destination.stream) + "')");
+    nfbe.logd("playAudio('" + String(destination) + "','" + String(destination.stream) + "')");
     var self = this;
     window.setTimeout(function() {
       self.mAudioPlayer.srcObject = destination.stream;
