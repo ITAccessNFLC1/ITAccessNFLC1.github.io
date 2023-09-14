@@ -9,6 +9,7 @@
     <audio id="test_audio" src="audiobeast.mp3"></audio><br>
     <label id="test_play_state"></label><br>
     <button onclick="do_play();">Play</button><button onclick="do_pause();">Pause</button><br>
+    <button onclick="set_mp3_source();">mp3 source</button><button onclick="set_oscillator();">Oscillator</button><br>
     <label id="test_sinklabel"></label><br>
     Change Audio Device: <select id="test_sinkdevices"
         onchange="device_selected(options, options.selectedIndex)">
@@ -23,7 +24,7 @@ var test_sinklabel   = null;
 var test_sinkdevices = null;
 var test_audioCtx    = null;
 var test_audioTrack  = null;
-var isBeep = false;
+var isOscillator     = false;
 
 window.onload = function () {
   test_audio_src   = document.getElementById("test_audio");
@@ -31,8 +32,7 @@ window.onload = function () {
   test_sinklabel   = document.getElementById("test_sinklabel");
   test_sinkdevices = document.getElementById("test_sinkdevices");
   test_audioCtx    = new AudioContext();
-  test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
-  //test_audioTrack  = test_audioCtx.createOscillator();
+  set_mp3_source();
   navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
       refresh();
@@ -44,15 +44,24 @@ window.onload = function () {
   );
 };
 
+function set_mp3_source() {
+  test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
+  isOscillator     = false;
+}
+
+function set_oscillator() {
+  test_audioTrack  = test_audioCtx.createOscillator();
+  test_audioTrack.start();
+  isOscillator     = true;
+}
+
 function do_play() {
   test_audioTrack.connect(test_audioCtx.destination);
-  //if (!isBeep) { test_audioTrack.start(); }
   test_audio_src.play();
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
-  //if (isBeep) { test_audioTrack.stop(); }
   test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
 }
