@@ -24,7 +24,8 @@ var test_sinklabel   = null;
 var test_sinkdevices = null;
 var test_audioCtx    = null;
 var test_audioTrack  = null;
-var isOscillator     = false;
+var test_oscillator  = null;
+var useOscillator    = false;
 
 window.onload = function () {
   test_audio_src   = document.getElementById("test_audio");
@@ -33,6 +34,8 @@ window.onload = function () {
   test_sinklabel   = document.getElementById("test_sinklabel");
   test_sinkdevices = document.getElementById("test_sinkdevices");
   test_audioCtx    = new AudioContext();
+  test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
+  test_oscillator  = test_audioCtx.createOscillator();
   set_mp3_source();
   navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
@@ -46,31 +49,30 @@ window.onload = function () {
 };
 
 function set_mp3_source() {
-  isOscillator     = false;
+  do_pause();
+  useOscillator = false;
 }
 
 function set_oscillator() {
-  isOscillator     = true;
+  do_pause();
+  useOscillator = true;
 }
 
 function do_play() {
   if (isOscillator) {
-    test_audioTrack = test_audioCtx.createOscillator();
-    test_audioTrack.connect(test_audioCtx.destination);
-    test_audioTrack.start();
+    test_oscillator.connect(test_audioCtx.destination);
+    test_oscillator.start();
   } else {
-    test_audio_src.pause();
-    test_audio_src.currentTime = 0;
-    test_audioTrack = test_audioCtx.createMediaElementSource(test_audio_src);
     test_audioTrack.connect(test_audioCtx.destination);
+    test_audio_src.currentTime = 0;
     test_audio_src.play();
   }
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
-  if (isOscillator) {
-    test_audioTrack.stop();
+  if (useOscillator) {
+    test_oscillator.stop();
   }
   test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
