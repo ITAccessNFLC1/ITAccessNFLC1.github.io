@@ -60,6 +60,7 @@ function set_oscillator() {
 
 function do_play() {
   if (useOscillator) {
+    test_oscillator  = test_audioCtx.createOscillator();
     test_oscillator.connect(test_audioCtx.destination);
     test_oscillator.start();
   } else {
