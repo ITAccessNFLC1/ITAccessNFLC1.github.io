@@ -51,17 +51,23 @@ function set_mp3_source() {
 
 function set_oscillator() {
   test_audioTrack  = test_audioCtx.createOscillator();
-  test_audioTrack.start();
   isOscillator     = true;
 }
 
 function do_play() {
   test_audioTrack.connect(test_audioCtx.destination);
-  test_audio_src.play();
+  if (isOscillator) {
+    test_audioTrack.start();
+  } else {
+    test_audio_src.play();
+  }
   test_play_state.innerHTML = 'Playing..';
 }
 
 function do_pause() {
+  if (isOscillator) {
+    test_audioTrack.stop();
+  }
   test_audio_src.pause();
   test_play_state.innerHTML = 'Pausing..';
 }
