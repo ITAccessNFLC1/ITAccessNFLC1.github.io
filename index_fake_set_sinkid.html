@@ -59,7 +59,7 @@ function set_oscillator() {
 }
 
 function do_play() {
-  if (isOscillator) {
+  if (useOscillator) {
     test_oscillator.connect(test_audioCtx.destination);
     test_oscillator.start();
   } else {
