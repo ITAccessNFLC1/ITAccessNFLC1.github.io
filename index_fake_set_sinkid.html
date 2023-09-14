@@ -45,20 +45,21 @@ window.onload = function () {
 };
 
 function set_mp3_source() {
-  test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
   isOscillator     = false;
 }
 
 function set_oscillator() {
-  test_audioTrack  = test_audioCtx.createOscillator();
   isOscillator     = true;
 }
 
 function do_play() {
-  test_audioTrack.connect(test_audioCtx.destination);
   if (isOscillator) {
+    test_audioTrack  = test_audioCtx.createOscillator();
+    test_audioTrack.connect(test_audioCtx.destination);
     test_audioTrack.start();
   } else {
+    test_audioTrack  = test_audioCtx.createMediaElementSource(test_audio_src);
+    test_audioTrack.connect(test_audioCtx.destination);
     test_audio_src.play();
   }
   test_play_state.innerHTML = 'Playing..';
