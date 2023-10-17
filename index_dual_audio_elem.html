@@ -24,7 +24,7 @@
         onchange="device_selected(2, options, options.selectedIndex)">
       <option value="invalid"></option>
     </select><br>
-    <button onclick="refreshAll();">Refresh device list</button>
+    <button onclick="refreshAll(true);">Refresh device list</button>
 
 <script>
 var test_audio_src   = [null, null, null];
@@ -43,6 +43,8 @@ window.onload = function () {
   test_audio_src[2]   = document.getElementById("test_audio2");
   test_audio_src[1].loop = true;
   test_audio_src[2].loop = true;
+  test_audio_dst[1]   = new Audio();
+  test_audio_dst[2]   = new Audio();
   test_play_state[1]  = document.getElementById("test_play_state1");
   test_play_state[2]  = document.getElementById("test_play_state2");
   test_sinklabel[1]   = document.getElementById("test_sinklabel1");
@@ -51,7 +53,7 @@ window.onload = function () {
   test_sinkdevices[2] = document.getElementById("test_sinkdevices2");
   navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
     function(stream) {
-      refreshAll();
+      refreshAll(false);
     }
   ).catch(
     function(err) {
@@ -63,10 +65,11 @@ window.onload = function () {
 function checkAndMakeAudioContext(n) {
   if (test_audioCtx[n] === null) {
     test_audioCtx[n]   = new AudioContext();
-    test_audio_dst[n]  = new Audio();
     test_audioTrack[n] = test_audioCtx[n].createMediaElementSource(test_audio_src[n]);
-    test_audioDest[n]  = test_audioCtx[n].createMediaStreamDestination();
     test_oscillator[n] = test_audioCtx[n].createOscillator();
+    test_audioDest[n]  = test_audioCtx[n].createMediaStreamDestination();
+    test_audio_dst[n].srcObject = test_audioDest[n].stream;
+    test_audio_dst[n].play();
   }
 }
 
@@ -82,14 +85,13 @@ function set_oscillator(n) {
 
 function do_play(n) {
   checkAndMakeAudioContext(n);
-  test_audio_dst[n].srcObject = test_audioDest[n].stream;
   test_audio_dst[n].play();
   if (useOscillator[n]) {
     test_oscillator[n]  = test_audioCtx[n].createOscillator();
     test_oscillator[n].connect(test_audioDest[n]);
     test_oscillator[n].start();
   } else {
-    test_audio_dst[n].play();
+    test_audioTrack[n].connect(test_audioDest[n]);
     test_audio_src[n].currentTime = 0;
     test_audio_src[n].play();
   }
@@ -97,25 +99,23 @@ function do_play(n) {
 }
 
 function do_pause(n) {
-  if (test_audio_dst[n]) {
-    test_audio_dst[n].pause();
-  }
   checkAndMakeAudioContext(n);
+  test_audio_dst[n].pause();
   if (useOscillator[n]) {
     test_oscillator[n].stop();
-    test_oscillator[n].disconnect(test_audioDest[n]);
+    test_oscillator[n].disconnect();
   } else {
+    test_audio_src[n].pause();
     test_audioTrack[n].disconnect();
   }
-  test_audio_src[n].pause();
   test_play_state[n].innerHTML = 'Pausing..';
 }
 
-function refreshAll() {
-  refresh(1);
-  refresh(2);
+function refreshAll(call_pause) {
+  refresh(1, call_pause);
+  refresh(2, call_pause);
 }
-function refresh(n) {
+function refresh(n, call_pause) {
   navigator.mediaDevices.enumerateDevices().then(
     function(infos) {
       test_sinkdevices[n].disabled  = true;
@@ -128,7 +128,9 @@ function refresh(n) {
         count++;
       }
       test_sinkdevices[n].disabled  = false;
-      do_pause(n);
+      if (call_pause) {
+        do_pause(n);
+      }
       device_selected(n, test_sinkdevices[n].options, 0);
     },
     function(msg) {
@@ -147,9 +149,8 @@ function make_option_tag(n, count, device_id, kind, label) {
 function device_selected(n, options, index) {
   var option    = options[index];
   var device_id = option.value;
-  // test_audioCtx[n].setSinkId(device_id).then(function(result) {
-  test_audioDest[n].setSinkId(device_id).then(function(result) {
-    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device sink ID is ' + test_audioDest[n].sinkId;
+  test_audio_dst[n].setSinkId(device_id).then(function(result) {
+    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device sink ID is ' + test_audio_dst[n].sinkId;
   }, function(e) {
     test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device could not be set: ' + e.name + ' - ' + e.message;
   });
