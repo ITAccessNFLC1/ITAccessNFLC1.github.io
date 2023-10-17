@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- original contents from url=(0044)https://guidou.github.io/setsinkid-demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Speaker TEST (Dual Audio)</title>
+    <!-- <script src="fake_set_sink_id.js"></script> -->
+  </head>
+  <body>
+    <br><br><br><b>Speaker TEST (Dual Audio)</b><br><b>MP3 audio:</b>
+    <audio id="test_audio1" src="audiobeast.mp3"></audio><br>
+    <audio id="test_audio2" src="sinister-156638.mp3"></audio><br>
+    <label id="test_play_state1"></label><br>
+    <label id="test_play_state2"></label><br>
+    <button onclick="do_play(1);">Play1</button><button onclick="do_pause(1);">Pause1</button><br>
+    <button onclick="set_mp3_source(1);">mp3 source1</button><button onclick="set_oscillator(1);">Oscillator1</button><br>
+    <button onclick="do_play(2);">Play2</button><button onclick="do_pause(2);">Pause2</button><br>
+    <button onclick="set_mp3_source(2);">mp3 source2</button><button onclick="set_oscillator(2);">Oscillator2</button><br>
+    <label id="test_sinklabel1"></label><br>
+    Change Audio Device: <select id="test_sinkdevices1"
+        onchange="device_selected(1, options, options.selectedIndex)">
+      <option value="invalid"></option>
+    </select><br>
+    <label id="test_sinklabel2"></label><br>
+    Change Audio Device: <select id="test_sinkdevices2"
+        onchange="device_selected(2, options, options.selectedIndex)">
+      <option value="invalid"></option>
+    </select><br>
+    <button onclick="refreshAll();">Refresh device list</button>
+
+<script>
+var test_audio_src   = [null, null, null];
+var test_audio_dst   = [null, null, null];
+var test_play_state  = [null, null, null];
+var test_sinklabel   = [null, null, null];
+var test_sinkdevices = [null, null, null];
+var test_audioCtx    = [null, null, null];
+var test_audioTrack  = [null, null, null];
+var test_audioDest   = [null, null, null];
+var test_oscillator  = [null, null, null];
+var useOscillator    = [false, false, false];
+
+window.onload = function () {
+  test_audio_src[1]   = document.getElementById("test_audio1");
+  test_audio_src[2]   = document.getElementById("test_audio2");
+  test_audio_src[1].loop = true;
+  test_audio_src[2].loop = true;
+  test_play_state[1]  = document.getElementById("test_play_state1");
+  test_play_state[2]  = document.getElementById("test_play_state2");
+  test_sinklabel[1]   = document.getElementById("test_sinklabel1");
+  test_sinklabel[2]   = document.getElementById("test_sinklabel2");
+  test_sinkdevices[1] = document.getElementById("test_sinkdevices1");
+  test_sinkdevices[2] = document.getElementById("test_sinkdevices2");
+  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then(
+    function(stream) {
+      refreshAll();
+    }
+  ).catch(
+    function(err) {
+      alert('Something wrong: ' + err);
+    }
+  );
+};
+
+function checkAndMakeAudioContext(n) {
+  if (test_audioCtx[n] === null) {
+    test_audioCtx[n]   = new AudioContext();
+    test_audio_dst[n]  = new Audio();
+    test_audioTrack[n] = test_audioCtx[n].createMediaElementSource(test_audio_src[n]);
+    test_audioDest[n]  = test_audioCtx[n].createMediaStreamDestination();
+    test_oscillator[n] = test_audioCtx[n].createOscillator();
+  }
+}
+
+function set_mp3_source(n) {
+  do_pause(n);
+  useOscillator[n] = false;
+}
+
+function set_oscillator(n) {
+  do_pause(n);
+  useOscillator[n] = true;
+}
+
+function do_play(n) {
+  checkAndMakeAudioContext(n);
+  test_audio_dst[n].srcObject = test_audioDest[n].stream;
+  test_audio_dst[n].play();
+  if (useOscillator[n]) {
+    test_oscillator[n]  = test_audioCtx[n].createOscillator();
+    test_oscillator[n].connect(test_audioDest[n]);
+    test_oscillator[n].start();
+  } else {
+    test_audio_dst[n].play();
+    test_audio_src[n].currentTime = 0;
+    test_audio_src[n].play();
+  }
+  test_play_state[n].innerHTML = 'Playing..';
+}
+
+function do_pause(n) {
+  if (test_audio_dst[n]) {
+    test_audio_dst[n].pause();
+  }
+  checkAndMakeAudioContext(n);
+  if (useOscillator[n]) {
+    test_oscillator[n].stop();
+    test_oscillator[n].disconnect(test_audioDest[n]);
+  } else {
+    test_audioTrack[n].disconnect();
+  }
+  test_audio_src[n].pause();
+  test_play_state[n].innerHTML = 'Pausing..';
+}
+
+function refreshAll() {
+  refresh(1);
+  refresh(2);
+}
+function refresh(n) {
+  navigator.mediaDevices.enumerateDevices().then(
+    function(infos) {
+      test_sinkdevices[n].disabled  = true;
+      test_sinkdevices[n].innerHTML = '';
+      var count = 1;
+      for (var i = 0; i < infos.length; i++) {
+        var info = infos[i];
+        if (info.kind != 'audiooutput') continue;
+        make_option_tag(n, count, info.deviceId, info.kind, info.label);
+        count++;
+      }
+      test_sinkdevices[n].disabled  = false;
+      do_pause(n);
+      device_selected(n, test_sinkdevices[n].options, 0);
+    },
+    function(msg) {
+      alert('[' + n + ']: Something wrong ' + msg);
+    }
+  );
+}
+
+function make_option_tag(n, count, device_id, kind, label) {
+  var option   = document.createElement("option");
+  option.value = device_id;
+  option.text  = '' + (count) + ' - ' + kind + ', ' + label;
+  test_sinkdevices[n].appendChild(option);
+}
+
+function device_selected(n, options, index) {
+  var option    = options[index];
+  var device_id = option.value;
+  // test_audioCtx[n].setSinkId(device_id).then(function(result) {
+  test_audio_dst[n].setSinkId(device_id).then(function(result) {
+    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device sink ID is ' + test_audio_dst[n].sinkId;
+  }, function(e) {
+    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device could not be set: ' + e.name + ' - ' + e.message;
+  });
+}
+</script>
+
+</body></html>
