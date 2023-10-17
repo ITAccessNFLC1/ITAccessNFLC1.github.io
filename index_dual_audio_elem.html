@@ -148,8 +148,8 @@ function device_selected(n, options, index) {
   var option    = options[index];
   var device_id = option.value;
   // test_audioCtx[n].setSinkId(device_id).then(function(result) {
-  test_audio_dst[n].setSinkId(device_id).then(function(result) {
-    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device sink ID is ' + test_audio_dst[n].sinkId;
+  test_audioDest[n].setSinkId(device_id).then(function(result) {
+    test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device sink ID is ' + test_audioDest[n].sinkId;
   }, function(e) {
     test_sinklabel[n].innerHTML = '[' + n + ']: Audio output device could not be set: ' + e.name + ' - ' + e.message;
   });
