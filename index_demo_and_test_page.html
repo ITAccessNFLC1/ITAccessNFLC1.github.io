@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Demo & TEST Page</title>
+    
+    <meta charset="utf-8" http-equiv="cache-control" content="no-cache">
+    <style type="text/css">
+    body {
+        margin: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    button {
+        background-color: greenyellow;
+        margin-top: 100px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 32px;
+        font-weight: 600;
+        border: 2px solid black;
+        width: 650px;
+        height: 40px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: steelblue;
+        color: white;
+    }
+
+    div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    h1 {
+        font-size: 32 px;
+        font-weight: 600;
+        color: blueviolet;
+    }
+
+    input {
+        margin: 0 auto;
+        margin-top: 20px;
+    }
+
+    iframe {
+        margin: 0 auto;
+    }
+
+    #testpage {
+        margin-top: 20px;
+    }
+
+    #uach {
+        margin-top: 20px;
+    }
+    </style>
+</head>
+
+<body>
+    <div>
+        <button onclick="testAlert()">Alert</button>
+        <button onclick="testConfirm()">Confirm</button>
+        <button onclick="testPromp()">Prompt</button>
+        <!--
+        <form action="upload.php" method="post" enctype="multipart/form-data">
+            <input id="file" type="file" name="files[]" />
+            <input id="html5-upload-button" type="submit" value="Upload" />
+        </form>
+        -->
+        <br/>
+        <a href="https://www.yahoo.co.jp" target="_blank" style="font-size:48px;">Visit Yahoo from new tab!</a>
+        <button onclick="openWindow()">Open Window to test html</button>
+        <button onclick="closeOpenedWindow()">Close Window</button>
+        <button onclick="openNewWindow()">Open New Window</button>
+        <iframe id="uach" src="https://flasdfjlasf.com/" width="600px" height="200px"></iframe>
+        <p><a href="latexsheet.pdf" download="sample.pdf">ファイル1をダウンロード(短いダウンロード)</a></p>
+        <p><a href="https://download.ted.com/products/153787.mp4?apikey=acme-roadrunner" download>ファイル2をダウンロード(長いダウンロード)</a></p>
+        <p><a href="pihdfhdhenuhhdf.png" download>ファイル3をダウンロード(ダウンロード失敗)</a></p>
+        <p><a href="akc-pupill-hdr-new-new.jpg" download>ファイル4をダウンロード</a></p>
+        <p><a href="patrick-kool-06EFQVjKIB8-unsplash.jpg" download>ファイル5をダウンロード</a></p>
+    </div>
+    <script type="text/javascript">
+        var winObj;
+
+        function testPromp() {
+            var result = prompt("input something..FileChooserParams::Mode");
+            console.log(result);
+        }
+
+        function testAlert() {
+            alert("Show something");
+        }
+
+        function testConfirm() {
+            var result = window.confirm("confirm something");
+            console.log(result);
+        }
+
+        function openWindow() {
+            console.log("open window")
+            winObj = window.open("test.html");
+        }
+
+       function openNewWindow() {
+            console.log("open new window")
+            winObj = window.open("subpage.html");
+        }
+
+        function closeOpenedWindow() {
+            if(winObj){
+                console.log(winObj);
+                console.log("close window...");
+                winObj.close();
+            }
+        }
+
+        function openNewWindow() {
+            window.open('subpage.html', "hoge");
+        }
+
+        function closeWindow() {
+            console.log("close window");
+            window.close();
+        }
+
+        document.getElementById('file').addEventListener('change', ev => {
+
+            for (let i = 0; i < ev.target.files.length; i++) {
+
+                let file = ev.target.files[i];
+
+                // ディレクトリの相対パス
+                let relativePath = file.webkitRelativePath;
+
+                // ここではテキストファイルとして読み出してみる.
+                let fileReader = new FileReader();
+                fileReader.onload = event => {
+
+                    // 内容を取得する.
+                    let text = event.target.result;
+
+                    // 表示してみる.
+                    console.log(relativePath, text);
+                }
+                fileReader.readAsText(file);
+            }
+        });  
+    </script>
+</body>
+
+</html>
