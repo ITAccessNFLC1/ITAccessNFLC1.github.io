@@ -6,20 +6,41 @@
     <title>TEST Contents Top page</title>
 
 <script>
+  var LONG_PROMPT   = 2;
+  var LONG_MESSAGE  = 1;
+  var SHORT_MESSAGE = 0;
+
   function doClear() {
     var tag = document.getElementById("div_result");
     tag.innerHTML = "result:";
   }
-  function doAlert() {
-    alert("argumentOfAlert");
+  function doAlert(n) {
+    if (n == 1) { // long message
+      alert("argumentOfAlert - ABCDEFGHIJKLMNOPQRSTUVWXYZ - abcdefghijklmnopqrstuvwxyz");
+    } else { // short message
+      alert("argumentOfAlert");
+    }
   }
-  function doConfirm() {
-    var res = confirm("argumentOfConfirm");
+  function doConfirm(n) {
+    var res;
+    if (n == 1) { // long message
+      res = confirm("argumentOfConfirm - ABCDEFGHIJKLMNOPQRSTUVWXYZ - abcdefghijklmnopqrstuvwxyz");
+    } else { // short message
+      res = confirm("argumentOfConfirm");
+    }
     var tag = document.getElementById("div_result");
     tag.innerHTML = "result:" + ((res) ? "True" : "False");
   }
-  function doPrompt() {
-    var res = prompt("argumentOfPrompt", "defaultOfPrompt");
+  function doPrompt(n) {
+    var res;
+    if (n == 2) { // long prompt
+      res = prompt("argumentOfPrompt", "defaultOfPrompt - ABCDEFGHIJKLMNOPQRSTUVWXYZ - abcdefghijklmnopqrstuvwxyz");
+    } else
+    if (n == 1) { // long message
+      res = prompt("argumentOfPrompt - ABCDEFGHIJKLMNOPQRSTUVWXYZ - abcdefghijklmnopqrstuvwxyz", "defaultOfPrompt");
+    } else { // short message
+      res = prompt("argumentOfPrompt", "defaultOfPrompt");
+    }
     var tag = document.getElementById("div_result");
     tag.innerHTML = "result:" + res;
   }
@@ -38,8 +59,12 @@
     <hr/>
     <div id="div_result">result:</div>
     <a href="javascript:doClear()">Clear Result</a><br/>
-    <a href="javascript:doAlert()">Alert Dialog</a><br/>
-    <a href="javascript:doConfirm()">Confirm Dialog</a><br/>
-    <a href="javascript:doPrompt()">Prompt Dialog</a><br/>
+    <a href="javascript:doAlert(SHORT_MESSAGE)">Alert Dialog</a><br/>
+    <a href="javascript:doAlert(LONG_MESSAGE)">Alert Dialog (Long Message)</a><br/>
+    <a href="javascript:doConfirm(SHORT_MESSAGE)">Confirm Dialog</a><br/>
+    <a href="javascript:doConfirm(LONG_MESSAGE)">Confirm Dialog (Long Message)</a><br/>
+    <a href="javascript:doPrompt(SHORT_MESSAGE)">Prompt Dialog</a><br/>
+    <a href="javascript:doPrompt(LONG_MESSAGE)">Prompt Dialog (Long Message)</a><br/>
+    <a href="javascript:doPrompt(LONG_PROMPT)">Prompt Dialog (Long Prompt)</a><br/>
   </body>
 </html>
